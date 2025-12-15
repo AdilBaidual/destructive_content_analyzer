@@ -1,0 +1,49 @@
+# Environment
+.env
+*.env
+
+# Virtual environment
+venv/
+.venv/
+env/
+
+# Models
+models/destructive/
+models/extremism/
+*.pkl
+*.keras
+*.h5
+
+# Data
+data/
+raw_data/
+prepared_data/
+
+# Static files (generated)
+static/*.png
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Jupyter
+.ipynb_checkpoints/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Session files
+*.session
+*.session-journal

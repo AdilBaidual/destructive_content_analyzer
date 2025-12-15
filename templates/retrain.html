@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Дообучение моделей</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            color: #e0e0e0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 30px 0;
+            border-bottom: 1px solid #333;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: #00d9ff;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #888;
+            font-size: 1.1rem;
+        }
+
+        nav {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        nav a {
+            color: #00d9ff;
+            text-decoration: none;
+            padding: 10px 20px;
+            border: 1px solid #00d9ff;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+
+        nav a:hover, nav a.active {
+            background: #00d9ff;
+            color: #1a1a2e;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border: 1px solid #333;
+        }
+
+        .card h2 {
+            color: #00d9ff;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #aaa;
+            font-size: 0.9rem;
+        }
+
+        input[type="text"], input[type="number"], textarea, select {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid #444;
+            border-radius: 5px;
+            color: #fff;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #00d9ff;
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: #00d9ff;
+            color: #1a1a2e;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-right: 10px;
+        }
+
+        .btn:hover {
+            background: #00b8d9;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: #fff;
+        }
+
+        .btn-success {
+            background: #2ecc71;
+            color: #fff;
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+            color: #fff;
+        }
+
+        .alert {
+            padding: 15px 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .alert-info {
+            background: rgba(0, 217, 255, 0.1);
+            border: 1px solid #00d9ff;
+            color: #00d9ff;
+        }
+
+        .alert-warning {
+            background: rgba(241, 196, 15, 0.1);
+            border: 1px solid #f1c40f;
+            color: #f1c40f;
+        }
+
+        .alert-success {
+            background: rgba(46, 204, 113, 0.1);
+            border: 1px solid #2ecc71;
+            color: #2ecc71;
+        }
+
+        .alert-danger {
+            background: rgba(231, 76, 60, 0.1);
+            border: 1px solid #e74c3c;
+            color: #e74c3c;
+        }
+
+        .posts-preview {
+            margin-top: 20px;
+        }
+
+        .post-item {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 1px solid #333;
+        }
+
+        .post-item:hover {
+            border-color: #00d9ff;
+        }
+
+        .post-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .post-id {
+            color: #00d9ff;
+            font-weight: 600;
+        }
+
+        .post-date {
+            color: #666;
+            font-size: 0.85rem;
+        }
+
+        .post-text {
+            color: #ccc;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+
+        .post-label {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .post-label label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            margin: 0;
+        }
+
+        .post-label input[type="radio"] {
+            width: auto;
+            cursor: pointer;
+        }
+
+        .label-destructive {
+            color: #e74c3c;
+        }
+
+        .label-neutral {
+            color: #2ecc71;
+        }
+
+        .model-select {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .model-option {
+            flex: 1;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 2px solid #333;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .model-option:hover {
+            border-color: #00d9ff;
+        }
+
+        .model-option.selected {
+            border-color: #00d9ff;
+            background: rgba(0, 217, 255, 0.1);
+        }
+
+        .model-option input {
+            display: none;
+        }
+
+        .model-option h3 {
+            color: #00d9ff;
+            margin-bottom: 5px;
+        }
+
+        .model-option p {
+            color: #888;
+            font-size: 0.9rem;
+        }
+
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            opacity: 0.5;
+        }
+
+        .step.active {
+            opacity: 1;
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .step.active .step-number {
+            background: #00d9ff;
+            color: #1a1a2e;
+        }
+
+        .step-label {
+            color: #888;
+            font-size: 0.85rem;
+        }
+
+        .step.active .step-label {
+            color: #00d9ff;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .metric-card {
+            background: rgba(0, 217, 255, 0.1);
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .metric-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #00d9ff;
+        }
+
+        .metric-label {
+            color: #888;
+            font-size: 0.85rem;
+            margin-top: 5px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px;
+            color: #666;
+            margin-top: 50px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎓 Дообучение моделей</h1>
+            <p class="subtitle">Улучшайте модели на новых данных из Telegram</p>
+            <nav>
+                <a href="/">Анализ</a>
+                <a href="/retrain" class="active">Дообучение</a>
+            </nav>
+        </header>
+
+        <!-- Step Indicator -->
+        <div class="step-indicator">
+            <div class="step {% if step == 1 %}active{% endif %}">
+                <div class="step-number">1</div>
+                <div class="step-label">Ввод данных</div>
+            </div>
+            <div class="step {% if step == 2 %}active{% endif %}">
+                <div class="step-number">2</div>
+                <div class="step-label">Превью и разметка</div>
+            </div>
+            <div class="step {% if step == 3 %}active{% endif %}">
+                <div class="step-number">3</div>
+                <div class="step-label">Дообучение</div>
+            </div>
+        </div>
+
+        {% if message %}
+        <div class="alert alert-{{ message_type|default('info') }}">
+            {{ message }}
+        </div>
+        {% endif %}
+
+        {% if step == 1 %}
+        <!-- Шаг 1: Ввод данных -->
+        <div class="card">
+            <h2>📥 Шаг 1: Загрузка постов для дообучения</h2>
+            <form method="post" action="/retrain/load">
+                <div class="form-group">
+                    <label for="channel">Название Telegram-канала</label>
+                    <input type="text" id="channel" name="channel"
+                           placeholder="@channel или channel" required>
+                </div>
+                <div class="form-group">
+                    <label for="post_ids">ID постов (через запятую)</label>
+                    <textarea id="post_ids" name="post_ids"
+                              placeholder="123, 456, 789, 1011..."></textarea>
+                    <small style="color: #666;">Введите ID постов, которые хотите использовать для дообучения</small>
+                </div>
+                <div class="form-group">
+                    <label>Выберите модель для дообучения</label>
+                    <div class="model-select">
+                        <label class="model-option" onclick="this.classList.add('selected'); document.querySelector('.model-option:not(:first-child)').classList.remove('selected')">
+                            <input type="radio" name="model_type" value="destructive" checked>
+                            <h3>🔴 Модель деструктива</h3>
+                            <p>SGDClassifier + TF-IDF</p>
+                        </label>
+                        <label class="model-option" onclick="this.classList.add('selected'); document.querySelector('.model-option:first-child').classList.remove('selected')">
+                            <input type="radio" name="model_type" value="extremism">
+                            <h3>⚠️ Модель экстремизма</h3>
+                            <p>Keras Neural Network</p>
+                        </label>
+                    </div>
+                </div>
+                <button type="submit" class="btn">Загрузить посты</button>
+            </form>
+        </div>
+        {% endif %}
+
+        {% if step == 2 %}
+        <!-- Шаг 2: Превью и разметка -->
+        <div class="card">
+            <h2>✏️ Шаг 2: Разметка постов</h2>
+            <p style="color: #888; margin-bottom: 20px;">
+                Отметьте каждый пост как деструктивный (1) или нейтральный (0)
+            </p>
+
+            <form method="post" action="/retrain/train">
+                <input type="hidden" name="model_type" value="{{ model_type }}">
+
+                <div class="posts-preview">
+                    {% for post in posts %}
+                    <div class="post-item">
+                        <div class="post-header">
+                            <span class="post-id">Пост #{{ post.post_id }}</span>
+                            <span class="post-date">{{ post.created_at }}</span>
+                        </div>
+                        <div class="post-text">{{ post.text }}</div>
+                        <div class="post-label">
+                            <input type="hidden" name="post_{{ loop.index0 }}_text" value="{{ post.text }}">
+                            <label class="label-destructive">
+                                <input type="radio" name="post_{{ loop.index0 }}_label" value="1" required>
+                                🔴 Деструктивный
+                            </label>
+                            <label class="label-neutral">
+                                <input type="radio" name="post_{{ loop.index0 }}_label" value="0">
+                                🟢 Нейтральный
+                            </label>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <input type="hidden" name="posts_count" value="{{ posts|length }}">
+
+                <div style="margin-top: 30px;">
+                    <button type="submit" class="btn btn-success">🎓 Дообучить модель</button>
+                    <a href="/retrain" class="btn btn-secondary">Отмена</a>
+                </div>
+            </form>
+        </div>
+        {% endif %}
+
+        {% if step == 3 %}
+        <!-- Шаг 3: Результаты -->
+        <div class="card">
+            <h2>✅ Шаг 3: Результаты дообучения</h2>
+
+            <div class="alert alert-success">
+                Модель успешно дообучена на {{ result.new_examples }} новых примерах!
+            </div>
+
+            {% if result.final_accuracy %}
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-value">{{ (result.final_accuracy * 100)|round(2) }}%</div>
+                    <div class="metric-label">Accuracy</div>
+                </div>
+                {% if result.final_loss %}
+                <div class="metric-card">
+                    <div class="metric-value">{{ result.final_loss|round(4) }}</div>
+                    <div class="metric-label">Loss</div>
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            <div style="margin-top: 30px;">
+                <a href="/retrain" class="btn">Дообучить еще</a>
+                <a href="/" class="btn btn-secondary">Перейти к анализу</a>
+            </div>
+        </div>
+        {% endif %}
+
+        <footer>
+            <p>Анализатор деструктивного контента v1.0</p>
+        </footer>
+    </div>
+
+    <script>
+        // Автовыбор первой модели
+        document.addEventListener('DOMContentLoaded', function() {
+            const firstOption = document.querySelector('.model-option');
+            if (firstOption) {
+                firstOption.classList.add('selected');
+            }
+        });
+    </script>
+</body>
+</html>
