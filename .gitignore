@@ -15,7 +15,6 @@ models/extremism/
 *.h5
 
 # Data
-data/
 raw_data/
 prepared_data/
 
