@@ -1,7 +1,3 @@
-"""
-Веб-приложение для анализа деструктивного контента.
-"""
-
 import os
 import time
 import matplotlib
@@ -30,7 +26,6 @@ def serve_static(filename):
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    """Главная страница - анализ канала."""
     result = None
     error = None
     filename = None
@@ -63,7 +58,6 @@ def index():
 
 @app.route('/check_extremism', methods=['POST'])
 def check_extremism():
-    """Проверка на экстремизм."""
     filename = request.form.get('filename') or session.get('last_filename')
     top_n = int(request.form.get('top_n', 10))
 
@@ -88,13 +82,11 @@ def check_extremism():
 
 @app.route('/retrain', methods=['GET'])
 def retrain_page():
-    """Страница дообучения."""
     return render_template('retrain.html', step=1)
 
 
 @app.route('/retrain/load', methods=['POST'])
 def retrain_load():
-    """Загрузка постов для дообучения."""
     channel = request.form.get('channel', '').strip()
     post_ids_str = request.form.get('post_ids', '').strip()
     model_type = request.form.get('model_type', 'destructive')
@@ -126,7 +118,6 @@ def retrain_load():
 
 @app.route('/retrain/train', methods=['POST'])
 def retrain_train():
-    """Дообучение модели."""
     model_type = request.form.get('model_type', 'destructive')
     posts_count = int(request.form.get('posts_count', 0))
 
@@ -165,7 +156,6 @@ def retrain_train():
 
 @app.route('/train_models', methods=['GET'])
 def train_models_page():
-    """Обучение моделей."""
     try:
         results = train_all_models()
         return render_template('retrain.html', step=3,
